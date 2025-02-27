@@ -1,6 +1,7 @@
 package com.example.demo;
 
- import org.springframework.boot.SpringApplication;
+
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -17,9 +18,10 @@ import com.example.demo.jobThread.CouponDailyJob;
 public class CouponsProject3Application {
 
 	public static void main(String[] args) {
-  		ConfigurableApplicationContext ctx = SpringApplication.run(CouponsProject3Application.class, args);
-		CouponDailyJob couponThread = ctx.getBean(CouponDailyJob.class);
-		couponThread.start();
+//  		ConfigurableApplicationContext ctx = SpringApplication.run(CouponsProject3Application.class, args);
+//		CouponDailyJob couponThread = ctx.getBean(CouponDailyJob.class);
+//		couponThread.start();
+		    SpringApplication.run(CouponsProject3Application.class, args);
 
 	}
 

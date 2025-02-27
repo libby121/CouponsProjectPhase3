@@ -1,25 +1,12 @@
 package com.example.demo.beans;
 
 import java.io.Serializable;
-import java.sql.Blob;
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.*;
 
-import javax.persistence.JoinColumn;
 
 @Entity
 @Table(name = "coupons")
@@ -42,9 +29,9 @@ public class Coupon implements Serializable {
 	 
 	private String description;
 	@Column(name = "start_date")
-	private Date startDate;
+	private LocalDateTime startDate;
 	@Column(name = "end_date")
-	private Date endDate;
+	private LocalDateTime endDate;
 	 
 	private int amount;
 	 @Column(scale=2) 
@@ -70,7 +57,7 @@ public class Coupon implements Serializable {
 
 	
 
-	public Coupon(int id, Category category,String title, String description, Date startDate, Date endDate, int amount,
+	public Coupon(int id, Category category,String title, String description, LocalDateTime startDate, LocalDateTime endDate, int amount,
 			double price) {
 		super();
 		this.id = id;
@@ -86,7 +73,7 @@ public class Coupon implements Serializable {
 	}
 
 	 
-	public Coupon(Category category, String title, String description, Date startDate, Date endDate, int amount,
+	public Coupon(Category category, String title, String description, LocalDateTime startDate, LocalDateTime endDate, int amount,
 			double price ) {
 		super();
 		this.category = category;
@@ -140,19 +127,19 @@ public class Coupon implements Serializable {
 		this.description = description;
 	}
 
-	public Date getStartDate() {
+	public LocalDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public LocalDateTime getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
 	}
 

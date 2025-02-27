@@ -1,18 +1,11 @@
 package com.example.demo.beans;
 
-import java.sql.Date;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  *  @Entity-Hibernate annotation. Indicates an entity to be mapped to a table in the dataBase.
  *  @Table-enables changing some meta-data of the created table, such as name.
@@ -41,11 +34,11 @@ public class Company {
 	private String password;
 	 @Column(scale=2) 
 	private double balance;
-	private Date lastUpdate;
+	private ZonedDateTime lastUpdate;
 
 	@JsonIgnore//other wise i get infinite loop in postman and parse error
 	@OneToMany(mappedBy="company", fetch=FetchType.EAGER)
-	private List<Coupon>coupons;
+	private List<Coupon> coupons;
 	
 	/**
 	 * Hibernate requires an empty CTOR for fetching the data (encapsulated as an object) from data base.
@@ -123,10 +116,10 @@ public class Company {
 	public List<Coupon> getCoupons() {
 		return coupons;
 	}
-	public Date getLastUpdate() {
+	public ZonedDateTime getLastUpdate() {
 		return lastUpdate;
 	}
-	public void setLastUpdate(Date lastUpdate) {
+	public void setLastUpdate(ZonedDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 	

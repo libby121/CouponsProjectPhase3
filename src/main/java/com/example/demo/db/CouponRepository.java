@@ -1,17 +1,14 @@
 package com.example.demo.db;
 
-import java.util.List;
-import java.util.Set;
 
-import javax.transaction.Transactional;
-
+import com.example.demo.beans.Category;
+import com.example.demo.beans.Coupon;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.example.demo.beans.Category;
-import com.example.demo.beans.Coupon;
-import com.example.demo.beans.Customer;
+import java.util.List;
 
 /**
  * Repositories interfaces are used for accessing (and persisting) database
