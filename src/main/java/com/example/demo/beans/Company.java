@@ -3,6 +3,7 @@ package com.example.demo.beans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -34,14 +35,14 @@ public class Company {
 	private String password;
 	 @Column(scale=2) 
 	private double balance;
-	private ZonedDateTime lastUpdate;
+	private LocalDateTime lastUpdate;
 
-	@JsonIgnore//other wise i get infinite loop in postman and parse error
+	@JsonIgnore//otherwise i get infinite loop in postman and parse error
 	@OneToMany(mappedBy="company", fetch=FetchType.EAGER)
 	private List<Coupon> coupons;
 	
 	/**
-	 * Hibernate requires an empty CTOR for fetching the data (encapsulated as an object) from data base.
+	 * Hibernate requires an empty CTOR for fetching the data (encapsulated as an object) from database.
 	 */
 	public Company() {
 		 
@@ -116,10 +117,10 @@ public class Company {
 	public List<Coupon> getCoupons() {
 		return coupons;
 	}
-	public ZonedDateTime getLastUpdate() {
+	public LocalDateTime getLastUpdate() {
 		return lastUpdate;
 	}
-	public void setLastUpdate(ZonedDateTime lastUpdate) {
+	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 	

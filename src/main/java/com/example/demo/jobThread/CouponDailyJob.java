@@ -3,6 +3,8 @@ package com.example.demo.jobThread;
 import java.io.IOException;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 
 import org.springframework.stereotype.Component;
@@ -49,9 +51,10 @@ public class CouponDailyJob extends Thread {
 
 			for (Coupon coup : coupoRepo.findAll()) {
 				Calendar cal = Calendar.getInstance();
-				cal.setTime(coup.getEndDate());
+				LocalDateTime currentTime = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-				if ((coup.getEndDate()).before((new Date(time.getTimeInMillis())))) {
+
+				if ((coup.getEndDate()).isBefore((currentTime))) {
 
 					try {
 						compafacade.deleteCoupon(coup.getId());

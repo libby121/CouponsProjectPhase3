@@ -20,11 +20,6 @@ import java.text.Normalizer.Form;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.http.HTTPBinding;
 
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.core.io.ClassPathResource;

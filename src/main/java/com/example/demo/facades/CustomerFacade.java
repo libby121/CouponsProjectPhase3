@@ -1,10 +1,15 @@
 package com.example.demo.facades;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +20,10 @@ import com.example.demo.beans.Customer;
 import com.example.demo.beans.ShoppingCart;
 import com.example.demo.exceptions.CouponDoesnotExistException;
 import com.example.demo.exceptions.CouponOutOfStockException;
-import com.example.demo.exceptions.CouponsCategoreyException;
 import com.example.demo.exceptions.CustomerDoesnotExistException;
 import com.example.demo.exceptions.NoSuchCouponException;
 import com.example.demo.exceptions.PurchaseDuplicationException;
 import com.example.demo.exceptions.couponExpiredException;
-import com.example.demo.exceptions.loginException;
-import com.example.demo.exceptions.maxPriceException;
 import com.example.demo.exceptions.noSuchCartException;
 import com.example.demo.login.ClientType;
 
@@ -62,7 +64,7 @@ public class CustomerFacade extends Facade {
 	 * purchase it is checked whether the customer should become a prime customer.Company's
 	 * balance and coupon's amount are also modified.
 	 * 
-	 * @param coupon
+	 * @param coupId
 	 * @throws CustomerDoesnotExistException
 	 * @throws CouponOutOfStockException
 	 * @throws PurchaseDuplicationException
@@ -83,8 +85,11 @@ public class CustomerFacade extends Facade {
 		if (customer.getCoupons().contains(coupon)) { 
 			throw new PurchaseDuplicationException();
 		}
-		Calendar cal = Calendar.getInstance(); 
-		if (coupon.getEndDate().before(new Date(cal.getTimeInMillis())))
+		Calendar cal = Calendar.getInstance();
+
+		LocalDateTime currentTime = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+ 		if (coupon.getEndDate().isBefore(currentTime))
 			throw new couponExpiredException();
 
 		else
@@ -212,11 +217,11 @@ public class CustomerFacade extends Facade {
 	public void addToCart(int couponId) throws NoSuchCouponException, noSuchCartException,
 			PurchaseDuplicationException, CouponOutOfStockException, CustomerDoesnotExistException, couponExpiredException {
 		ShoppingCart cart = 	getOrCreateCart();
- 		Calendar cal = Calendar.getInstance(); 
+ 		Calendar cal = Calendar.getInstance();
 
-	
+		LocalDateTime currentTime = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		Coupon c = couponRepo.findById(couponId).orElseThrow(NoSuchCouponException::new);
-		if (c.getEndDate().before(new Date(cal.getTimeInMillis())))
+		if (c.getEndDate().isBefore(currentTime))
 			throw new couponExpiredException();
 		 
 		if ( (getCustomerCoupons().contains(c)) || ( cart.getCoupons().contains(c)))

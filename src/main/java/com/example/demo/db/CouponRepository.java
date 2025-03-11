@@ -31,7 +31,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 	 * coupons table, it has to be taken from the @ManyToMany coupons purchases
 	 * table.
 	 * 
-	 * @param customerID
+	 * @param customerId
 	 * @return
 	 */
 	@Query(value = "select * from coupons join customers_vs_coupons ON coupons.id=customers_vs_coupons.coupon_id"

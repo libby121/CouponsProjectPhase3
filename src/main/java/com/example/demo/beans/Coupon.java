@@ -228,8 +228,7 @@ public class Coupon implements Serializable {
 	 * If a customer is a prime customer the coupon's price is always lower.
 	 * Otherwise the regular price is set to it.
 	 * 
-	 * @param c
-	 * @return
+	 * @return c
 	 */
 	public double getPrice()
 	{

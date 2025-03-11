@@ -2,7 +2,6 @@ package com.example.demo.facades;
 
 import java.util.List;
 
-import javax.xml.ws.ServiceMode;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,9 @@ import com.example.demo.exceptions.CustomerExistsException;
 import com.example.demo.exceptions.CompanyDoesNotExistException;
 import com.example.demo.exceptions.CouponDoesnotExistException;
 import com.example.demo.exceptions.CustomerDoesnotExistException;
+import com.example.demo.exceptions.CompanyDoesNotExistException;
+
 import com.example.demo.exceptions.companyExistsException;
-import com.example.demo.exceptions.loginException;
 import com.example.demo.exceptions.unmodifiedCompanyNameException;
 
 /**
@@ -71,7 +71,7 @@ public class AdminFacade extends Facade {
 	 * the coupons table. 
 	 * 
 	 * @param id
-	 * @throws companyDoesnotExistException
+	 * @throws CompanyDoesNotExistException
 	 */
 
 	public void deleteCompany(int id) {
