@@ -5,6 +5,6 @@ package com.example.demo.beans;
  *
  */
 public enum Category {
-	Food,Beauty,Home,Concerts,Travel,Pets,Other
+	Food,Beauty,Home,Concerts,Travel,Pets
 
 }
