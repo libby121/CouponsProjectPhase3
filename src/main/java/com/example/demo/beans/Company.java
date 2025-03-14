@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -55,7 +54,7 @@ public class Company {
 	 */
 	public Company(String name, String email, String password) {
 		 
-		this.name = name;
+		this.name = "name";
 		this.email = email;
 		this.password = password;
 		this.balance=0;
