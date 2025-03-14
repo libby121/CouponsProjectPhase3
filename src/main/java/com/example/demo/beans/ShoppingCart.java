@@ -2,9 +2,7 @@ package com.example.demo.beans;
 
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,7 +35,7 @@ public class ShoppingCart {
 	@Id
 	private String Id;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "shoppingCarts_vs_coupons", joinColumns = @JoinColumn(name = "cart_id"), inverseJoinColumns = @JoinColumn(name = "coupon_id"))
 	private Set<Coupon> coupons;
 
