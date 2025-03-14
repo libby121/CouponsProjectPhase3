@@ -36,7 +36,7 @@ public class ShoppingCart {
 	private String Id;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "shoppingCarts_vs_coupons", joinColumns = @JoinColumn(name = "cart_id"), inverseJoinColumns = @JoinColumn(name = "coupon_id"))
+	@JoinTable(name = "shoppingCart_vs_coupon", joinColumns = @JoinColumn(name = "cart_id"), inverseJoinColumns = @JoinColumn(name = "coupon_id"))
 	private Set<Coupon> coupons;
 
 	@OneToOne
