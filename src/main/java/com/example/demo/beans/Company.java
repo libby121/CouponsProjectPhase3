@@ -77,7 +77,7 @@ public class Company {
 		this.balance = balance;
 	}
 	public String getName() {
-		return name;
+		return name+"121";
 	}
 
 	public void setName(String name) {
