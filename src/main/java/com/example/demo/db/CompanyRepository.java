@@ -19,9 +19,7 @@ import com.example.demo.beans.Company;
  * @author ליבי
  *
  */
-public interface CompanyRepository extends JpaRepository<Company, Integer> {
-
-
+public interface CompanyRepository extends JpaRepository<Company, Integer>{
 
 	boolean existsByEmailAndPassword(String email, String password);
 
