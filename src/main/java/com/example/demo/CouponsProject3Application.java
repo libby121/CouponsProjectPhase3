@@ -3,9 +3,7 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
-import com.example.demo.jobThread.CouponDailyJob;
 /**
  * Spring context is responsible for the instantiation and configuration of and classes 
  * (marked throughout the meta-code in annotations, xml or other files).

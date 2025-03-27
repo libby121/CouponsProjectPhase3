@@ -1,55 +1,33 @@
 package com.example.demo.web;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.List;
-import java.util.Map;
-
+import com.example.demo.beans.Company;
+import com.example.demo.beans.Coupon;
+import com.example.demo.beans.Customer;
+import com.example.demo.exceptions.*;
+import com.example.demo.facades.AdminFacade;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.beans.Company;
-import com.example.demo.beans.Coupon;
-import com.example.demo.beans.Customer;
-import com.example.demo.exceptions.CustomerDoesnotExistException;
-import com.example.demo.exceptions.CustomerExistsException;
-import com.example.demo.exceptions.NoSuchCouponException;
-import com.example.demo.exceptions.CompanyDoesNotExistException;
-import com.example.demo.exceptions.CouponDoesnotExistException;
-import com.example.demo.exceptions.companyExistsException;
-import com.example.demo.exceptions.unmodifiedCompanyNameException;
-import com.example.demo.facades.AdminFacade;
-import com.example.demo.facades.CompanyFacade;
-import com.example.demo.facades.CustomerFacade;
-import com.example.demo.facades.Facade;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * @RestController-A special version(of spring 4) of @Controller which simplifies the Restful Web services and combines together
- * @controller and @ResponseBody, ResponseEntity is the default return type. Default scope is Singleton. 
- * 
- * @RequestMapping-Used for mapping web requests to specific classes or methods.
- *  
- * @CrossOrigin-By default requests that are sent from different origins i.e different domains, ports, or protocols
+ * RestController tag-A special version(of spring 4) of @Controller which simplifies the Restful Web services and combines together
+ * controller and ResponseBody tags- ResponseEntity is the default return type. Default scope is Singleton.
+ * RequestMapping tag-Used for mapping web requests to specific classes or methods.
+ * CrossOrigin tag-By default requests that are sent from different origins i.e different domains, ports, or protocols
  * are being blocked by the security mechanism - CORS policy. 
  * When adding this spring annotation I can easily define which origin I do give permission to.
- *  
- * @PathVariable-Used for method parameters which do not require the name of the variable before them when sent to the server.
+ * PathVariable tag-Used for method parameters which do not require the name of the variable before them when sent to the server.
  * As opposed to @QueryParam which are passed as a key-value pair. This makes the URL shorter but in some cases might be less straight-forward. 
- *  
- * @RequestBody-Used for parameters that will not be sent in the URI itself but in the request body data.Especialy for 
+ * RequestBody tag-Used for parameters that will not be sent in the URI itself but in the request body data. Especially for
  * complex objects that are sent from client. 
  * 
  * 
@@ -62,12 +40,8 @@ import com.example.demo.facades.Facade;
 @CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
 
-	private Map<String, SessionInfo> sessions;
+	 Map<String, SessionInfo>sessions;
 
-	public AdminController(Map<String, SessionInfo> sessions) {
-
-		this.sessions = sessions;
-	}
 
 	
 	@PostMapping("/company/add/{token}")
@@ -105,7 +79,7 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/company/delete/{token}/{companyId}")
-	public ResponseEntity<?> deleteCompany( @PathVariable String token,@PathVariable int companyId) {
+	public ResponseEntity<?> deleteCompany( @PathVariable String token,@PathVariable UUID companyId) {
 		SessionInfo session = sessions.get(token);
 
 		AdminFacade admin = (AdminFacade) session.getFacade();
@@ -131,7 +105,7 @@ public class AdminController {
 
 
 	@GetMapping("/company/{token}/{companyId}")
-	public ResponseEntity<?> getOneCompany(@PathVariable String token,@PathVariable int companyId)
+	public ResponseEntity<?> getOneCompany(@PathVariable String token,@PathVariable UUID companyId)
 			throws CompanyDoesNotExistException {
 
 		SessionInfo session = sessions.get(token);

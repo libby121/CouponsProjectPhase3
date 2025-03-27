@@ -1,37 +1,20 @@
 package com.example.demo.facades;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.cglib.core.Local;
+import com.example.demo.beans.*;
+import com.example.demo.exceptions.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.beans.Category;
-import com.example.demo.beans.Company;
-import com.example.demo.beans.Coupon;
-import com.example.demo.beans.Customer;
-import com.example.demo.beans.ShoppingCart;
-import com.example.demo.exceptions.CouponDoesnotExistException;
-import com.example.demo.exceptions.CouponOutOfStockException;
-import com.example.demo.exceptions.CustomerDoesnotExistException;
-import com.example.demo.exceptions.NoSuchCouponException;
-import com.example.demo.exceptions.PurchaseDuplicationException;
-import com.example.demo.exceptions.couponExpiredException;
-import com.example.demo.exceptions.noSuchCartException;
-import com.example.demo.login.ClientType;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * 
- * @Service is a specific @component(=>signals classes to be managed by spring
+ * service tag is a specific @component(=>signals classes to be managed by spring
  *          context with the functionality of dependency injection.)
- * @service marks for spring a facade class, used for defining the business
+ * service tag marks for spring a facade class, used for defining the business
  *          logic. Since each connected user will get his own facade eventually,
  *          and both company and customer facades hold a variable of
  *          identification,of which the returned facade is dependent upon, the
@@ -60,18 +43,18 @@ public class CustomerFacade extends Facade {
 	/**
 	 * Before activating the purchase, it is checked whether the buyer is a prime
 	 * customer. if he is then the coupon's price is 5% lower. A customer becomes
-	 * prime if his revenue to the companies get's to 2000 ILS, after every
+	 * prime if his revenue to the companies gets to 2000 ILS, after every
 	 * purchase it is checked whether the customer should become a prime customer.Company's
 	 * balance and coupon's amount are also modified.
 	 * 
-	 * @param coupId
-	 * @throws CustomerDoesnotExistException
-	 * @throws CouponOutOfStockException
-	 * @throws PurchaseDuplicationException
-	 * @throws couponExpiredException
-	 * @throws CouponDoesnotExistException
-	 * @throws noSuchCartException 
-	 * @throws NoSuchCouponException 
+	 * @param coupId- coupon id
+	 * @throws CustomerDoesnotExistException- no customer
+	 * @throws CouponOutOfStockException- no more coupons in stock
+	 * @throws PurchaseDuplicationException - customer already purchased the product
+	 * @throws couponExpiredException - coupon expired
+	 * @throws CouponDoesnotExistException - no such coupon
+	 * @throws noSuchCartException  - cart not found
+	 * @throws NoSuchCouponException  - coupon not found
 	 */
 	public Coupon purchaseCoupon(int coupId) throws CustomerDoesnotExistException, CouponOutOfStockException,
 			PurchaseDuplicationException, couponExpiredException, CouponDoesnotExistException, NoSuchCouponException, noSuchCartException {
@@ -116,14 +99,14 @@ public class CustomerFacade extends Facade {
 	 * coupon's company, the coupon's amount, company's balance, customer's shopping cart (the coupon is back in cart, after
 	 * it was removed from there on purchasing), and the customer's revenue.
 	 * 
-	 * @param coupId
-	 * @throws CustomerDoesnotExistException
-	 * @throws CouponDoesnotExistException
-	 * @throws CouponOutOfStockException 
-	 * @throws PurchaseDuplicationException 
-	 * @throws noSuchCartException 
-	 * @throws NoSuchCouponException 
-	 * @throws couponExpiredException 
+	 * @param coupId - coupon id
+	 * @throws CustomerDoesnotExistException-customer not found
+	 * @throws CouponDoesnotExistException-coupon not found
+	 * @throws CouponOutOfStockException - coupon is out of stock
+	 * @throws PurchaseDuplicationException - customer already purchased the product
+	 * @throws noSuchCartException - cart not found
+	 * @throws NoSuchCouponException  - coupon not found
+	 * @throws couponExpiredException - coupon expired
 	 */
 	public void cancelOrder(int coupId) throws CustomerDoesnotExistException, CouponDoesnotExistException, NoSuchCouponException, noSuchCartException, PurchaseDuplicationException, CouponOutOfStockException, couponExpiredException {
 		Customer cust = customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);
@@ -169,9 +152,9 @@ public class CustomerFacade extends Facade {
 
 	 /**
 	  * A method to be used for a customer to buy one coupon out of all existing coupons.
-	  * @param coupId
-	  * @return
-	  * @throws NoSuchCouponException
+	  * @param coupId - coupon id
+	  * @return - returns coupon object
+	  * @throws NoSuchCouponException- coupon not found
 	  */
 	public Coupon getOneCoupon(int coupId) throws NoSuchCouponException {
 		return couponRepo.findById(coupId).orElseThrow(NoSuchCouponException::new);
@@ -180,8 +163,8 @@ public class CustomerFacade extends Facade {
 	/**
 	 * If the customer owns a cart then the method simply returns it, otherwise a
 	 * new Shopping cart is created, it's Id is assigned to the global cartId variable and the new Shopping cart is returned.
-	 * @return
-	 * @throws CustomerDoesnotExistException
+	 * @return ShoppingCart
+	 * @throws CustomerDoesnotExistException- customer not found
 	 */
 	public ShoppingCart getOrCreateCart() throws CustomerDoesnotExistException {
 		Customer c = customerRepo.findById(this.id).orElseThrow(CustomerDoesnotExistException::new);
@@ -205,14 +188,13 @@ public class CustomerFacade extends Facade {
 	/**
 	 * A coupon can only be added to cart if it's amount and date are valid and if 
 	 * it was not already purchased by the customer.
-	 * @param couponId
-	 * @return
-	 * @throws NoSuchCouponException
-	 * @throws noSuchCartException
-	 * @throws PurchaseDuplicationException
-	 * @throws CouponOutOfStockException
-	 * @throws CustomerDoesnotExistException
-	 * @throws couponExpiredException 
+	 * @param couponId-coupon id
+	 * @throws NoSuchCouponException-coupon not found
+	 * @throws noSuchCartException-cart not found
+	 * @throws PurchaseDuplicationException-customer already purchased the product
+	 * @throws CouponOutOfStockException-coupon is out of stock
+	 * @throws CustomerDoesnotExistException=customer not found
+	 * @throws couponExpiredException -coupon expired
 	 */
 	public void addToCart(int couponId) throws NoSuchCouponException, noSuchCartException,
 			PurchaseDuplicationException, CouponOutOfStockException, CustomerDoesnotExistException, couponExpiredException {
@@ -232,8 +214,7 @@ public class CustomerFacade extends Facade {
 			cart.getCoupons().add(c);
 		 
 			cartRepo.save(cart);
-			 return;
-		}
+ 		}
 		else throw new CouponOutOfStockException();
 	}
 

@@ -13,16 +13,13 @@ import java.util.UUID;
  * his PC, and if different customers use the same PC they can still access
  * their own cart only . That way the cart cannot be mistakenly deleted from
  * local storage, can be traced by the company and can be easily managed.
- * 
  * A Shopping cart contains a Set of coupons (as every coupon can only be
  * purchased once by each customer, so it can only appear in the cart uniquely
  * once).Shopping cart-coupon => @ManyToMany relationship since every coupon can
  * appear in different carts and every cart aims to have many different coupons.
- * 
  * Each cart is connected to one particular customer, and vice versa, a customer
  * can only own one cart at a time=> @OneToOne relationship.
- * 
- *           The cart Id is a unique UUID String and is generated automatically
+ *           The cart id is a unique UUID String and is generated automatically
  *           on cart creation.
  * 
  * @author ליבי
@@ -33,11 +30,11 @@ import java.util.UUID;
 public class ShoppingCart {
 
 	@Id
-	private String Id;
+	private final String Id;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "shoppingCart_vs_coupon", joinColumns = @JoinColumn(name = "cart_id"), inverseJoinColumns = @JoinColumn(name = "coupon_id"))
-	private Set<Coupon> coupons;
+	private final Set<Coupon> coupons;
 
 	@OneToOne
 	private Customer customer;
@@ -48,21 +45,13 @@ public class ShoppingCart {
 		super();
 		this.Id = String.valueOf(UUID.randomUUID());
 		this.customer = customer;
-		this.coupons=new HashSet<Coupon>();
+		this.coupons= new HashSet<>();
 		 
 		 
  	}
 
-	public ShoppingCart() {
-		super();
-	}
-
 	public String getCartId() {
 		return Id;
-	}
-
-	public void setCartId(String cartId) {
-		this.Id = cartId;
 	}
 
 	public Set<Coupon> getCoupons() {

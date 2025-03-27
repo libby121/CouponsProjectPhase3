@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Repositories interfaces are used for accessing (and persisting) database
@@ -20,19 +21,19 @@ import java.util.List;
  */
 public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 
-	List<Coupon> findByCompanyIdAndCategory(int companyId, Category category);// works with category enum?
+	List<Coupon> findByCompanyIdAndCategory(UUID companyId, Category category);// works with category enum?
 
-	List<Coupon> findByCompanyId(int companyId);
+	List<Coupon> findByCompanyId(UUID companyId);
 
-	List<Coupon> findByCompanyIdAndPriceLessThanEqual(int companyId, double price);
+	List<Coupon> findByCompanyIdAndPriceLessThanEqual(UUID companyId, double price);
 
 	/**
 	 * Requires JOIN operation since the customer_id is not referenced in the
 	 * coupons table, it has to be taken from the @ManyToMany coupons purchases
 	 * table.
 	 * 
-	 * @param customerId
-	 * @return
+	 * @param customerId- customer id
+	 * @return Coupon list
 	 */
 	@Query(value = "select * from coupons join customers_vs_coupons ON coupons.id=customers_vs_coupons.coupon_id"
 			+ " where customer_id=:customerId", nativeQuery = true)
@@ -50,8 +51,8 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 	 * Coupon purchases history deletion. Will be needed in deleteCompany() and
 	 * deleteCustomer() methods.
 	 * 
-	 * @param custId
-	 * @param coupId
+	 * @param custId- customer id
+	 * @param coupId - coupon id
 	 */
 	@Modifying
 	@Transactional

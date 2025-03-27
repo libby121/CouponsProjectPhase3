@@ -1,29 +1,20 @@
 package com.example.demo.facades;
 
-import java.util.List;
-
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import com.example.demo.beans.Company;
 import com.example.demo.beans.Coupon;
 import com.example.demo.beans.Customer;
-import com.example.demo.exceptions.CustomerExistsException;
-import com.example.demo.exceptions.CompanyDoesNotExistException;
-import com.example.demo.exceptions.CouponDoesnotExistException;
-import com.example.demo.exceptions.CustomerDoesnotExistException;
-import com.example.demo.exceptions.CompanyDoesNotExistException;
+import com.example.demo.exceptions.*;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-import com.example.demo.exceptions.companyExistsException;
-import com.example.demo.exceptions.unmodifiedCompanyNameException;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * /**
- * 
- * @Service is a specific @component(=>signals classes to be managed by spring
+ * service tag is a specific @component(=>signals classes to be managed by spring
  *          context with the functionality of dependency injection.)
- * @service marks for spring a facade class, used for defining the business
+ * service tag marks for spring a facade class, used for defining the business
  *          logic. Since each connected user will get his own facade eventually,
  *          and both company and customer facades hold a variable of
  *          identification,of which the returned facade is dependent upon, the
@@ -70,11 +61,9 @@ public class AdminFacade extends Facade {
 	 * and the deletion of company coupons from
 	 * the coupons table. 
 	 * 
-	 * @param id
-	 * @throws CompanyDoesNotExistException
+	 * @param id- company id
 	 */
-
-	public void deleteCompany(int id) {
+	public void deleteCompany(UUID id) {
 
 		for (Coupon c : couponRepo.findByCompanyId(id)) {
 
@@ -100,8 +89,8 @@ public class AdminFacade extends Facade {
 		return companyRepo.findAll();
 	}
 
-	public Company getCompanyByID(int id) throws CompanyDoesNotExistException {
-		return companyRepo.findById(id).orElseThrow(CompanyDoesNotExistException::new);
+	public Company getCompanyByID(UUID id) {
+		return companyRepo.findById(id);
 	}
 
 	public void addCustomer(Customer customer) throws CustomerExistsException {
@@ -127,7 +116,7 @@ public class AdminFacade extends Facade {
 	 * A deletion of a customer requires the preceding deletion of the customer's
 	 * purchases and cart.
 	 * 
-	 * @param id
+	 * @param id- customer id
 	 */
 	public void deleteCustomer(int id) throws CustomerDoesnotExistException {
 		Customer c = customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);

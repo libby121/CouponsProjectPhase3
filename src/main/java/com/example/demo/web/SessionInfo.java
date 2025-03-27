@@ -1,8 +1,4 @@
 package com.example.demo.web;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-
 import com.example.demo.facades.Facade;
 /**
  * SessionInfo is a wrapping class that is made up of details about the session(last accessed) plus the facade itself.

@@ -5,19 +5,19 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
- *  @Entity-Hibernate annotation. Indicates an entity to be mapped to a table in the dataBase.
- *  @Table-enables changing some meta-data of the created table, such as name.
- *  @Id-an annotation that represents a primary key by which the entity will be identified.
- *  @GeneratedValue(Identity)-the marked property will be automatically incremented by one in every creation 
+ *  Entity tag-Hibernate annotation. Indicates an entity to be mapped to a table in the dataBase.
+ *  Table tag-enables changing some meta-data of the created table, such as name.
+ *  id tag-an annotation that represents a primary key by which the entity will be identified.
+ *  GeneratedValue(Identity) tag-the marked property will be automatically incremented by one in every creation
  *  of the class object. 
- *  @Column- java property to be mapped to a column.
- *  @OneToMany-In this case, each company entity'owns' a list of coupons. The coupons property is not mapped to a 
- *  column but it rather represents a relation.
+ *  Column tag-java property to be mapped to a column.
+ *  OneToMany tag-In this case, each company entity 'owns' a list of coupons. The coupons property is not mapped to a
+ *  column, but it rather represents a relation.
  *  mappedBy-marks that the property in this bean does not require a separate table since it's the opposite side of @ManyToOne 
  *  relation which already exist in another bean.
- *  
  *  fetch-There are different strategies to get or fetch the data of related entities. "eager" means that 
  *  the fetched data includes information that might not be otherwise critical or essential to fetch.But is needed in this case.
  *
@@ -26,49 +26,47 @@ import java.util.List;
 @Table(name="companies")
 public class Company {
 	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	@JsonIgnore//otherwise i get infinite loop in postman and parse error
+	@OneToMany(mappedBy="company", fetch=FetchType.EAGER)
+	 List<Coupon> coupons;
 	private String name;
 	private String email;
 	private String password;
-	 @Column(scale=2) 
-	private double balance;
+	@Id
+	@GeneratedValue(strategy=GenerationType.UUID)
+	private UUID id;
 	private LocalDateTime lastUpdate;
-
-	@JsonIgnore//otherwise i get infinite loop in postman and parse error
-	@OneToMany(mappedBy="company", fetch=FetchType.EAGER)
-	private List<Coupon> coupons;
+	 @Column(scale=2)
+	private Double balance;
 	
 	/**
-	 * Hibernate requires an empty CTOR for fetching the data (encapsulated as an object) from database.
+	 * Hibernate requires an empty Constructor for fetching the data (encapsulated as an object) from database.
 	 */
 	public Company() {
 		 
 	}
 	/**
-	 * CTOR for adding a company. Id is automatically generated, balance equals 0.
-	 * @param name
-	 * @param email
-	 * @param password
+	 * constructor for adding a company. id is automatically generated, balance equals 0.
+ 	 * @param email-company email
+	 * @param password-company password
 	 */
-	public Company(String name, String email, String password) {
+	public Company( String email, String password) {
 		 
 		this.name = "name";
 		this.email = email;
 		this.password = password;
-		this.balance=0;
+		this.balance= (double) 0;
 	}
 	
 	/**
-	 * An optional CTOR for updating the company using it's Id
-	 * @param id
-	 * @param name
-	 * @param email
-	 * @param password
-	 * @param balance
+	 * An optional constructor for updating the company using its id
+	 * @param id-company id
+	 * @param name-company name
+	 * @param email-company email
+	 * @param password-company password
+	 * @param balance-company balance
 	 */
-	public Company(int id, String name, String email, String password, double balance) {
+	public Company(UUID id, String name, String email, String password, Double balance) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -100,16 +98,16 @@ public class Company {
 		this.password = password;
 	}
 
-	public double getBalance() {
+	public Double getBalance() {
 		return balance;
 	}
 
 	 
 
-	public void setBalance(double balance) {
+	public void setBalance(Double balance) {
 		this.balance = balance;
 	}
-	public int getId() {
+	public UUID getId() {
 		return id;
 	}
 

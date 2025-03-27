@@ -1,75 +1,27 @@
 package com.example.demo.web;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.text.Normalizer.Form;
-import java.util.List;
-import java.util.Map;
-
-
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
+import com.example.demo.beans.Category;
+import com.example.demo.beans.Coupon;
+import com.example.demo.exceptions.*;
+import com.example.demo.facades.CompanyFacade;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.beans.Category;
-import com.example.demo.beans.Company;
-import com.example.demo.beans.Coupon;
-import com.example.demo.exceptions.CouponDateSetException;
-import com.example.demo.exceptions.CouponDoesnotExistException;
-import com.example.demo.exceptions.CouponExistsException;
-import com.example.demo.exceptions.CouponOfAnotherCompanyException;
-import com.example.demo.exceptions.CouponOutOfStockException;
-import com.example.demo.exceptions.CouponsCategoreyException;
-import com.example.demo.exceptions.NoSuchCouponException;
-import com.example.demo.exceptions.companyExistsException;
-import com.example.demo.exceptions.CompanyDoesNotExistException;
-import com.example.demo.exceptions.unchangeableCouponCompanyId;
-import com.example.demo.facades.AdminFacade;
-import com.example.demo.facades.CompanyFacade;
-import com.example.demo.facades.Facade;
+import java.io.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/company")
 @CrossOrigin(origins = { "http://localhost:4200" })
 public class CompanyController {
 
-	private Map<String, SessionInfo> sessions;
+	 Map<String, SessionInfo> sessions;
 
 	public CompanyController(Map<String, SessionInfo> sessions) {
  		this.sessions = sessions;

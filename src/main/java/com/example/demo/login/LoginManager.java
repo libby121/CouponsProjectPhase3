@@ -1,15 +1,13 @@
 package com.example.demo.login;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import com.example.demo.exceptions.loginException;
 import com.example.demo.facades.AdminFacade;
 import com.example.demo.facades.CompanyFacade;
 import com.example.demo.facades.CustomerFacade;
 import com.example.demo.facades.Facade;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Service;
 /**
  * LoginManager is a singleton class used for managing the login process. For each ClientType case the required client facade is
  * instantiated by spring context according to the user and returned if the login succeeds. 
@@ -22,7 +20,7 @@ public class LoginManager {
 
  
 	@Autowired
-	private ConfigurableApplicationContext ctx;
+	 ConfigurableApplicationContext ctx;
 
 	public Facade login(String email, String password, ClientType type) throws loginException {//better writing?
 		switch (type) {

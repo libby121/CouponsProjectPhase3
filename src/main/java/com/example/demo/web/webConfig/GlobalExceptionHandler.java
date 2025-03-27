@@ -1,13 +1,12 @@
 package com.example.demo.web.webConfig;
 
+import com.example.demo.exceptions.CompanyDoesNotExistException;
+import com.example.demo.exceptions.CustomerDoesnotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import com.example.demo.exceptions.CustomerDoesnotExistException;
-import com.example.demo.exceptions.CompanyDoesNotExistException;
 
 /**
  * A global exception handler. Works automatically as an AOP code. 

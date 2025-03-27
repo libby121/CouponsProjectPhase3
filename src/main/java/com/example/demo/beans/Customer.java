@@ -1,12 +1,10 @@
 package com.example.demo.beans;
 
-import java.io.Serializable;
-import java.util.Set;
-
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name="customers")
@@ -37,11 +35,11 @@ public class Customer  implements Serializable {
 	 @Column(scale=2)  
 	private double revenue;
 	/**
-	 * Set (instead of a List) makes sure that both coupn_id and customer_id are the primary key together, 
+	 * Set (instead of a List) makes sure that both coupon_id and customer_id are the primary key together,
 	 * a Set in Java only accepts a unique value. 
 	 */
 	@ManyToMany(mappedBy="customers",fetch=FetchType.EAGER)
-	private Set<Coupon>coupons;
+	 Set<Coupon>coupons;
 
  
 	@OneToOne(mappedBy="customer")
@@ -121,10 +119,8 @@ public class Customer  implements Serializable {
 				return false;
 		} else if (!firstName.equals(other.firstName))
 			return false;
-		if (id != other.id)
-			return false;
-		return true;
-	}
+        return id == other.id;
+    }
 	public boolean isPrime() {
 		return isPrime;
 	}

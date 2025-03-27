@@ -1,49 +1,27 @@
 package com.example.demo.web;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.List;
-import java.util.Map;
-
+import com.example.demo.beans.Category;
+import com.example.demo.beans.Coupon;
+import com.example.demo.exceptions.*;
+import com.example.demo.facades.CustomerFacade;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.beans.Category;
-import com.example.demo.beans.Company;
-import com.example.demo.beans.Coupon;
-import com.example.demo.exceptions.CouponDoesnotExistException;
-import com.example.demo.exceptions.CouponOutOfStockException;
-import com.example.demo.exceptions.CustomerDoesnotExistException;
-import com.example.demo.exceptions.NoSuchCouponException;
-import com.example.demo.exceptions.PurchaseDuplicationException;
-import com.example.demo.exceptions.companyExistsException;
-import com.example.demo.exceptions.couponExpiredException;
-import com.example.demo.exceptions.noSuchCartException;
-import com.example.demo.facades.AdminFacade;
-import com.example.demo.facades.CompanyFacade;
-import com.example.demo.facades.CustomerFacade;
-
-import ch.qos.logback.core.status.Status;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/customer")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CustomerController {
 
-	private Map<String, SessionInfo> sessions;
+	 Map<String, SessionInfo> sessions;
 
 	public CustomerController(Map<String, SessionInfo> sessions) {
 		super();
@@ -217,7 +195,7 @@ public class CustomerController {
 
 		CustomerFacade customer = (CustomerFacade) thisSession.getFacade();
 
-		Coupon c = null;
+		Coupon c ;
 
 		try {
 			c = customer.getOneCoupon(coupId);

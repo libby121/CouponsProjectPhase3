@@ -1,11 +1,12 @@
 package com.example.demo.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 
 
 @Entity
@@ -13,10 +14,11 @@ import jakarta.persistence.*;
  
 public class Coupon implements Serializable {
 
-	 
+
 	/**
-	 * 
+	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -40,17 +42,15 @@ public class Coupon implements Serializable {
 	private String image;
 	@ManyToOne
 	private Company company;
-	@Column(name = "discount_status", nullable = true) // which name do i use in update
-	private boolean isSalePrice;
-	@JsonIgnore//other wise i get infinite loop in postman
+	@JsonIgnore
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "customers_vs_coupons", joinColumns = @JoinColumn(name = "coupon_id"), 
+	@JoinTable(name = "customers_vs_coupons", joinColumns = @JoinColumn(name = "coupon_id"),
 	inverseJoinColumns = @JoinColumn(name = "customer_id"))
 	Set<Customer>customers ;
+	@Column(name = "discount_status")
+	private boolean isSalePrice;
 
-//	@ManyToMany(mappedBy="cartItems")
-//	Set<ShoppingCart>carts;
 	public Coupon() {
 		super();
 	}
@@ -87,11 +87,7 @@ public class Coupon implements Serializable {
 		this.isSalePrice = false;
 
 	}
- 
 
-	 
-	 
-//for test
 	public Coupon( int id, String title, int amount, double price) {
 		super();
 		this.id=id;
@@ -194,8 +190,6 @@ public class Coupon implements Serializable {
 		return result;
 	}
 
-
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -208,12 +202,9 @@ public class Coupon implements Serializable {
 		if (id != other.id)
 			return false;
 		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
-		return true;
-	}
+            return other.title == null;
+		} else return title.equals(other.title);
+    }
 
 	/**
 	 * hashCode- numeric representation of the object in memory.
@@ -226,7 +217,7 @@ public class Coupon implements Serializable {
 	/**
 	 * An overloading of getPrice() method.
 	 * If a customer is a prime customer the coupon's price is always lower.
-	 * Otherwise the regular price is set to it.
+	 * Otherwise, the regular price is set to it.
 	 * 
 	 * @return c
 	 */
@@ -237,6 +228,7 @@ public class Coupon implements Serializable {
 	public double getPrice(Customer c) {
 		if(c.isPrime())
 		return price*0.95;
+
 		return price;
 	}
 
