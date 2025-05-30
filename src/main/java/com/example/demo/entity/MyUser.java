@@ -1,28 +1,36 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.UUID;
+import java.util.*;
+
 @MappedSuperclass
-public abstract class User {
+ public abstract class MyUser {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-
+    @GeneratedValue(strategy = GenerationType.UUID)
     protected UUID id;
-    protected String name;
+    @Column(name="userName")
+    protected String userName;
     protected String email;
     protected String password;
 
-    public User() {
+//add the roles?
+    public MyUser(String userName, String password, String email) {
+
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public MyUser() {
+
     }
 
-    public void setName(String name) {
-        this.name = name;
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setEmail(String email) {
@@ -39,8 +47,8 @@ public abstract class User {
 
 
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
     public String getEmail() {
@@ -51,10 +59,5 @@ public abstract class User {
         return password;
     }
 
-    public User(UUID id, String name, String email, String password) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
+
 }

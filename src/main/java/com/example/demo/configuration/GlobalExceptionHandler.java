@@ -1,4 +1,4 @@
-package com.example.demo.configuration.webConfig;
+package com.example.demo.configuration;
 
 import com.example.demo.exceptions.CompanyDoesNotExistException;
 import com.example.demo.exceptions.CustomerDoesnotExistException;

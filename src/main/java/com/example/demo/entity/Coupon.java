@@ -1,4 +1,4 @@
-package com.example.demo.beans;
+package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,45 +7,32 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Entity
 @Table(name = "coupons")
  
-public class Coupon implements Serializable {
-
-
-	/**
-	 *
-	 */
-	@Serial
-	private static final long serialVersionUID = 1L;
-
+public class Coupon  {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	 
 	private Category category;
-	 
 	private String title;
-	 
 	private String description;
 	@Column(name = "start_date")
 	private LocalDateTime startDate;
 	@Column(name = "end_date")
 	private LocalDateTime endDate;
-	 
 	private int amount;
-	 @Column(scale=2) 
+	@Column(scale=2)
 	private double price;
-	
 	private String image;
 	@ManyToOne
 	private Company company;
 	@JsonIgnore
-
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "customers_vs_coupons", joinColumns = @JoinColumn(name = "coupon_id"),
+	@JoinTable(name = "customers_coupons", joinColumns = @JoinColumn(name = "coupon_id"),
 	inverseJoinColumns = @JoinColumn(name = "customer_id"))
 	Set<Customer>customers ;
 	@Column(name = "discount_status")
@@ -57,46 +44,27 @@ public class Coupon implements Serializable {
 
 	
 
-	public Coupon(int id, Category category,String title, String description, LocalDateTime startDate, LocalDateTime endDate, int amount,
+	public Coupon( Category category,String title, String description, LocalDateTime startDate, LocalDateTime endDate, int amount,
 			double price) {
 		super();
-		this.id = id;
- 		this.title = title;
+		this.title = title;
  		this.category=category;
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.amount = amount;
 		this.price = price;
-		 System.out.println("ctor");
 
 	}
 
-	 
-	public Coupon(Category category, String title, String description, LocalDateTime startDate, LocalDateTime endDate, int amount,
-			double price ) {
-		super();
-		this.category = category;
-		this.title = title;
-		this.description = description;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.amount = amount;
-		this.price = price;
-		 
-		this.isSalePrice = false;
 
-	}
-
-	public Coupon( int id, String title, int amount, double price) {
+	public Coupon( String title, int amount, double price) {
 		super();
-		this.id=id;
-		this.title = title;
+ 		this.title = title;
 		this.amount = amount;
 		this.price = price;
 		 
 	}
-
 
 
 	public Category getCategory() {
@@ -228,7 +196,6 @@ public class Coupon implements Serializable {
 	public double getPrice(Customer c) {
 		if(c.isPrime())
 		return price*0.95;
-
 		return price;
 	}
 

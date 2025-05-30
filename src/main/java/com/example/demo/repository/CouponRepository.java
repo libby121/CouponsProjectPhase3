@@ -1,14 +1,16 @@
-package com.example.demo.db;
+package com.example.demo.repository;
 
 
-import com.example.demo.beans.Category;
-import com.example.demo.beans.Coupon;
+import com.example.demo.entity.Category;
+import com.example.demo.entity.Coupon;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -19,6 +21,7 @@ import java.util.UUID;
  * @author ליבי
  *
  */
+@Repository
 public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 
 	List<Coupon> findByCompanyIdAndCategory(UUID companyId, Category category);// works with category enum?
@@ -37,15 +40,15 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 	 */
 	@Query(value = "select * from coupons join customers_vs_coupons ON coupons.id=customers_vs_coupons.coupon_id"
 			+ " where customer_id=:customerId", nativeQuery = true)
-	List<Coupon> findCustomerCoupons(int customerId);
+	List<Coupon> findCustomerCoupons(UUID customerId);
 
 	@Query(value = "select * from coupons join customers_vs_coupons ON coupons.id=customers_vs_coupons.coupon_id "
 			+ "where customer_id=:customerId and category=:#{#category.ordinal()}", nativeQuery = true)
-	List<Coupon> findCustomerCouponsByCategory(int customerId, Category category);
+	List<Coupon> findCustomerCouponsByCategory(UUID customerId, Category category);
 
 	@Query(value = "select * from coupons join customers_vs_coupons ON coupons.id=customers_vs_coupons.coupon_id "
 			+ "where customer_id=:customerId and price<=:maxPrice", nativeQuery = true)
-	List<Coupon> findCustomerCouponsByPrice(int customerId, double maxPrice);
+	List<Coupon> findCustomerCouponsByPrice(UUID customerId, double maxPrice);
 
 	/**
 	 * Coupon purchases history deletion. Will be needed in deleteCompany() and
@@ -57,20 +60,9 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 	@Modifying
 	@Transactional
 	@Query(value = "delete from customers_vs_coupons where customer_id=:custId and coupon_id=:coupId", nativeQuery = true)
-	void deleteCouponPurchase(int custId, int coupId);
+	void deleteCouponPurchase(UUID custId, int coupId);
+	
+	Optional<Coupon>findById(int copuonId);
 
 
-
-	
-	@Modifying
-	@Transactional
-	@Query(value="delete from shopping_carts_vs_coupons where coupon_id=:coupId",nativeQuery=true)
-	void deleteCouponFromCart( int coupId);
-	
-		
-		
-		
-		
-		
-}
-	
+ }

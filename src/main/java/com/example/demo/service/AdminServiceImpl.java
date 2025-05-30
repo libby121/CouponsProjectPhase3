@@ -4,7 +4,16 @@ import com.example.demo.entity.Company;
 import com.example.demo.entity.Coupon;
 import com.example.demo.entity.Customer;
 import com.example.demo.exceptions.*;
+import com.example.demo.jwt.JwtService;
+import com.example.demo.repository.CompanyRepository;
+import com.example.demo.repository.CouponRepository;
+import com.example.demo.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,15 +31,26 @@ import java.util.UUID;
  *          functionalities.
  */
 
-@org.springframework.stereotype.Service
+@Service
 @Scope(value = "prototype")
-public class AdminMyService extends MyService {
+public class AdminServiceImpl  implements AdminService {
 
-		@Override
-	public boolean login(String email, String password) {
-		return (email.equals("com.admin@admin") && password.equals("admin"));
+	private final CompanyRepository companyRepo;
+	private final CouponRepository couponRepo;
+	private final CustomerRepository customerRepo;
 
+	@Autowired
+	AuthenticationManager authManager;
+
+	@Autowired
+	JwtService jwtService;
+
+	public AdminServiceImpl(CompanyRepository companyRepository, CouponRepository couponRepository, CustomerRepository customerRepository) {
+		this.companyRepo = companyRepository;
+		this.couponRepo = couponRepository;
+		this.customerRepo = customerRepository;
 	}
+
 
 	public void addCompany(Company comp) throws companyExistsException {
 
@@ -142,6 +162,16 @@ public class AdminMyService extends MyService {
 
 	public Coupon getOneCoupon(int coupId) throws CouponDoesnotExistException {
 		return couponRepo.findById(coupId).orElseThrow(CouponDoesnotExistException::new);
+	}
+
+	@Override
+	public Company getOneCompany(String token, UUID companyId) {
+		return null;
+	}
+
+	@Override
+	public void addCustomer(String token, Customer customer) {
+
 	}
 
 }

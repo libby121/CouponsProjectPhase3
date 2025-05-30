@@ -1,9 +1,8 @@
 package com.example.demo.service;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -11,100 +10,75 @@ import java.util.UUID;
 import com.example.demo.entity.*;
 import com.example.demo.jwt.JwtService;
 import com.example.demo.model.CompanyDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.model.CouponDTO;
+import com.example.demo.repository.CompanyRepository;
+import com.example.demo.repository.CouponRepository;
+import com.example.demo.repository.CustomerRepository;
 import org.springframework.context.annotation.Scope;
 
 import com.example.demo.exceptions.CouponDateSetException;
 import com.example.demo.exceptions.CouponDoesnotExistException;
 import com.example.demo.exceptions.CouponExistsException;
-import com.example.demo.exceptions.CouponOfAnotherCompanyException;
 import com.example.demo.exceptions.CouponOutOfStockException;
 import com.example.demo.exceptions.CompanyDoesNotExistException;
-import com.example.demo.exceptions.loginException;
 import com.example.demo.exceptions.unchangeableCouponCompanyId;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-@org.springframework.stereotype.Service
+@Service
 @Scope(value = "prototype")
-public class CompanyMyService extends MyService {
+public class CompanyServiceImpl implements CompanyService {
 
-	@Autowired
-	AuthenticationManager authManager;
-
-	@Autowired
-	JwtService jwtService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;//?
-
-	private UUID id;
-	private int idInt;
+	private String rawPassword ;
+	private final CompanyRepository companyRepo;
+	private final CouponRepository couponRepo;
+	private final CustomerRepository customerRepo;
+	private final AuthenticationManager authManager;
+	private final JwtService jwtService;
+	private final PasswordEncoder passwordEncoder;
+	private UUID companyId;
 
 
-	/*
-	the revised login method. used with authentication object and
-	authenticationManager
-	 */
-	public String verify(String username, String password){
+	public CompanyServiceImpl(JwtService jwtService,
+							  PasswordEncoder passwordEncoder, AuthenticationManager authManager, CustomerRepository customerRepo, CouponRepository couponRepo, CompanyRepository companyRepo) {
+		this.jwtService = jwtService;
+		this.passwordEncoder = passwordEncoder;
 
-		Authentication authentication =
-				authManager.authenticate(new
-						UsernamePasswordAuthenticationToken(username,
-						password));
-		if(authentication.isAuthenticated())
-			return jwtService.generateToken(username);
-		return "User was not authenticated. Wrong " +
-				"username or password";
-
+		this.authManager = authManager;
+		this.customerRepo = customerRepo;
+		this.couponRepo = couponRepo;
+		this.companyRepo = companyRepo;
 	}
-	public CompanyDTO register(String username,String password, String email){
-		Company c = new Company(username,password,email);
-		c.setPassword(passwordEncoder.encode(c.getPassword()));
- 		companyRepo.save(c);
-		return convertToDTO(c);
 
-	}
 	public CompanyDTO register(CompanyDTO u){
 		Company uu = convertToEntity(u);
 		uu.setPassword(passwordEncoder.encode(uu.getPassword()));
-
+        //decode password?
 		CompanyDTO uuu=convertToDTO(uu);
 		companyRepo.save(uu);
 		return uuu;
 
 	}
 
-
-	@Override
-	public boolean login(String email, String password) throws loginException {
-
-		Company c = companyRepo.findByEmailAndPassword(email, password).orElseThrow(loginException::new );
-		id=c.getId();
-		return (companyRepo.findByEmailAndPassword(email, password).isPresent());
-		 
-
-	}
-
 	public Coupon getOneCoupon(int coupId) throws CouponDoesnotExistException {
 		Coupon c = couponRepo.findById(coupId).orElse(null);
-		if (couponRepo.findByCompanyId(id).contains(c))
+		if (couponRepo.findByCompanyId(companyId).contains(c))
 			return c;
 		else
 			throw new CouponDoesnotExistException();
 	}
 
 	public List<Coupon> getCouponsByCategory(Category cat) { 
-		return couponRepo.findByCompanyIdAndCategory(id, cat);
+		return couponRepo.findByCompanyIdAndCategory(companyId, cat);
 	}
 
-	public void addCoupon(Coupon coup) throws CouponExistsException, CouponDateSetException,
+	public void addCoupon(CouponDTO couponDT) throws CouponExistsException, CouponDateSetException,
 			CompanyDoesNotExistException, CouponOutOfStockException {
 		Calendar cal = Calendar.getInstance();
 		LocalDateTime currentTime = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-
+        Coupon coup = convertToEntity(couponDT);
 		if (coup.getStartDate().getSecond() > (coup.getEndDate().getSecond()))
 			throw new CouponDateSetException();
 		if (coup.getStartDate().isAfter(coup.getEndDate()) || !((currentTime.isBefore(coup.getStartDate()))))
@@ -112,29 +86,35 @@ public class CompanyMyService extends MyService {
 		if (coup.getAmount() <= 0)
 			throw new CouponOutOfStockException();
 		if (getCompanyCoupons() != null) {
-			for (Coupon c : getCompanyCoupons()) {
+			for (CouponDTO c : getCompanyCoupons()) {
 				if (c.getTitle().equals(coup.getTitle()))
 					throw new CouponExistsException();
 			}
 
 		}
 
- 		coup.setCompany(companyRepo.findById(id).orElseThrow(CompanyDoesNotExistException::new));// check why i must
+ 		coup.setCompany(companyRepo.findById(companyId).orElseThrow(CompanyDoesNotExistException::new));// check why i must
 																									// have this..?
 		coup.setSalePrice(false);
 		couponRepo.save(coup);
 	}
 
-	public List<Coupon> getCompanyCoupons() {
-		 
-		return couponRepo.findByCompanyId(id);
+	public List<CouponDTO> getCompanyCoupons() {
+
+        List<CouponDTO> list = new ArrayList<>();
+        for (Coupon coupon : couponRepo.findByCompanyId(companyId)) {
+            CouponDTO couponDTO = convertToDTO(coupon);
+            list.add(couponDTO);
+        }
+        return list;
 	}
 
-	public void updateCoupon(Coupon coupon)
+	public void updateCoupon(CouponDTO couponDT)
 			throws unchangeableCouponCompanyId, CouponDateSetException, CouponOutOfStockException {
 		Calendar cal = Calendar.getInstance();
 		LocalDateTime currentTime = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
+		Coupon coupon = convertToEntity(couponDT);
 
 		if (coupon.getStartDate().getSecond() > (coupon.getEndDate().getSecond()))
 			throw new CouponDateSetException();
@@ -142,7 +122,7 @@ public class CompanyMyService extends MyService {
 			throw new CouponDateSetException();
 		if (coupon.getAmount() <= 0)
 			throw new CouponOutOfStockException();
-		if (coupon.getCompany().getId().equals(id)) {
+		if (coupon.getCompany().getId().equals(companyId)) {
 			couponRepo.save(coupon);
 			coupon.getCompany().setLastUpdate((currentTime));
 			companyRepo.save(coupon.getCompany());
@@ -152,63 +132,72 @@ public class CompanyMyService extends MyService {
 			throw new unchangeableCouponCompanyId();
 	}
 
-	public void deleteCoupon(int Couponid)
-			throws CompanyDoesNotExistException, CouponOfAnotherCompanyException, CouponDoesnotExistException {
+	public void deleteCoupon(int couponid)
+			throws CompanyDoesNotExistException {
 		Calendar cal = Calendar.getInstance();
 
-		Company comp = companyRepo.findById(id).orElseThrow(CompanyDoesNotExistException::new);
-		Coupon coup = couponRepo.findById(Couponid).orElseThrow(CouponDoesnotExistException ::new);
-		if (!comp.getCoupons().contains(coup))
-			throw new CouponOfAnotherCompanyException();
+		Company comp = companyRepo.findById(companyId).orElseThrow(CompanyDoesNotExistException::new);
+		Coupon coup = couponRepo.findById(couponid).orElseThrow();
 		LocalDateTime currentTime = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
 		getCompanyDetails().setLastUpdate(currentTime);
 
 		companyRepo.save(comp);
 
-		couponRepo.deleteById(Couponid);
+		couponRepo.deleteById(couponid);
 
 
-	}
-
-	/**
-	 * A method for reading the deleted coupons file, (which is set in the AOP
-	 * class)
-	 * 
-	 * @throws IOException
-	 */
-	public void fileRead() throws IOException {
-		try (FileReader reader = new FileReader("C:\\TestsF\\CouponsArchiveFile.txt")) {
-			int tav = reader.read();
-
-			while (tav != -1) {
-				System.out.print((char) tav);
-				tav = reader.read();
-			}
-		}
 	}
 
 	public List<Coupon> getCouponUpToMaxPrice(double maxPrice) {
-		return couponRepo.findByCompanyIdAndPriceLessThanEqual(id, maxPrice);
+		return couponRepo.findByCompanyIdAndPriceLessThanEqual(companyId, maxPrice);
 	}
 
 	public Company getCompanyDetails() throws CompanyDoesNotExistException {
-		return companyRepo.findById(id).orElseThrow(CompanyDoesNotExistException::new);
+		return companyRepo.findById(companyId).orElseThrow(CompanyDoesNotExistException::new);
 
 	}
 
+	private Coupon convertToEntity(CouponDTO dt){
+		Coupon c = new Coupon();
+		c.setCompany(dt.getCompany());
+		c.setCategory(dt.getCategory());
+		c.setAmount(dt.getAmount());
+		c.setDescription(dt.getDescription());
+		c.setImage(dt.getImage());
+		c.setPrice(dt.getPrice());
+		return c;
+
+	}
+	private CouponDTO convertToDTO(Coupon c){
+		 CouponDTO dt =new CouponDTO();
+		 dt.setAmount(c.getAmount());
+		 dt.setCategory(c.getCategory());
+		 dt.setId(c.getId());
+		 dt.setTitle(c.getTitle());
+		 dt.setPrice(c.getPrice());
+		 dt.setSalePrice(c.isSalePrice());
+		 dt.setDescription(c.getDescription());
+		 dt.setStartDate(c.getStartDate());
+		 dt.setEndDate(c.getEndDate());
+		 return dt;
+	}
 	private Company convertToEntity(CompanyDTO dt){
 		Company company = new Company();
  		company.setUserName(dt.getUserName());
 		company.setPassword(dt.getPassword());
+// 		company.setRoles(dt.getRoles());
+ 		company.setEmail(dt.getEmail());
 		return company;
 	}
 	private CompanyDTO convertToDTO(Company company){
 		CompanyDTO dt = new CompanyDTO();
- 		dt.setUserName(company.getUserName());
-		dt.setPassword(company.getPassword());
-		dt.setEmail(company.getEmail());
-
+		dt.setBalance(company.getBalance());
+		dt.setLastUpdate(company.getLastUpdate());
+		dt.setUserName(company.getUserName());
+ 		dt.setEmail(company.getEmail());
+        dt.setCoupons(company.getCoupons());
+		dt.setRoles(company.getRoles());
 		return dt;
 	}
 }

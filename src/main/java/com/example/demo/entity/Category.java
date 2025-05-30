@@ -1,4 +1,4 @@
-package com.example.demo.beans;
+package com.example.demo.entity;
 /**
  * Enum class- a closed list of coupon's categories.
  *  

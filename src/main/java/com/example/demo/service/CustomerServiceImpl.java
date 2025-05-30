@@ -4,6 +4,9 @@ import com.example.demo.entity.*;
 import com.example.demo.exceptions.*;
 import com.example.demo.jwt.JwtService;
 import com.example.demo.model.CustomerDTO;
+import com.example.demo.repository.CompanyRepository;
+import com.example.demo.repository.CouponRepository;
+import com.example.demo.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,19 +36,25 @@ import java.util.UUID;
 
 @Service
 @Scope("prototype")//?
-  public class CustomerMyService implements MyService {
+  public class CustomerServiceImpl implements CustomerService {
 
 	private UUID id;
 
-	@Autowired
-	AuthenticationManager authManager;
+ 	private final AuthenticationManager authManager;
+ 	private final JwtService jwtService;
+ 	private final PasswordEncoder passwordEncoder;
+	private final CompanyRepository companyRepo;
+	private final CouponRepository couponRepo;
+	private final CustomerRepository customerRepo;
 
-	@Autowired
-	JwtService jwtService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;//?
-	//@PreAuthorize("ADMIN")
-
+	public CustomerServiceImpl(AuthenticationManager authManager, JwtService jwtService, PasswordEncoder passwordEncoder, CompanyRepository companyRepo, CouponRepository couponRepo, CustomerRepository customerRepo) {
+		this.authManager = authManager;
+		this.jwtService = jwtService;
+		this.passwordEncoder = passwordEncoder;
+		this.companyRepo = companyRepo;
+		this.couponRepo = couponRepo;
+		this.customerRepo = customerRepo;
+	}
 
 	public String verify(String username, String password){
 
@@ -54,10 +63,7 @@ import java.util.UUID;
 						UsernamePasswordAuthenticationToken(username,
 						password));
 
-	//check if has any role
-
-
-		if(authentication.isAuthenticated())
+	if(authentication.isAuthenticated())
 			return jwtService.generateToken(username);
 		return "User was not authenticated. Wrong " +
 				"username or password";
@@ -73,24 +79,6 @@ import java.util.UUID;
 
 	}
 
-
-
-	/**
-	 * Before activating the purchase, it is checked whether the buyer is a prime
-	 * customer. if he is then the coupon's price is 5% lower. A customer becomes
-	 * prime if his revenue to the companies gets to 2000 ILS, after every
-	 * purchase it is checked whether the customer should become a prime customer.Company's
-	 * balance and coupon's amount are also modified.
-	 * 
-	 * @param coupId- coupon id
-	 * @throws CustomerDoesnotExistException- no customer
-	 * @throws CouponOutOfStockException- no more coupons in stock
-	 * @throws PurchaseDuplicationException - customer already purchased the product
-	 * @throws couponExpiredException - coupon expired
-	 * @throws CouponDoesnotExistException - no such coupon
-	 * @throws noSuchCartException  - cart not found
-	 * @throws NoSuchCouponException  - coupon not found
-	 */
 	public Coupon purchaseCoupon(int coupId) throws CustomerDoesnotExistException, CouponOutOfStockException,
 			PurchaseDuplicationException, couponExpiredException, CouponDoesnotExistException, NoSuchCouponException, noSuchCartException {
 
@@ -128,20 +116,7 @@ import java.util.UUID;
 
 	}
 
-	/**
-	 * Order cancellation requires: retrieving the canceled coupon and modifying the
-	 * coupon's company, the coupon's amount, company's balance, customer's shopping cart (the coupon is back in cart, after
-	 * it was removed from there on purchasing), and the customer's revenue.
-	 * 
-	 * @param coupId - coupon id
-	 * @throws CustomerDoesnotExistException-customer not found
-	 * @throws CouponDoesnotExistException-coupon not found
-	 * @throws CouponOutOfStockException - coupon is out of stock
-	 * @throws PurchaseDuplicationException - customer already purchased the product
-	 * @throws noSuchCartException - cart not found
-	 * @throws NoSuchCouponException  - coupon not found
-	 * @throws couponExpiredException - coupon expired
-	 */
+
 	public void cancelOrder(int coupId) throws CustomerDoesnotExistException, CouponDoesnotExistException, NoSuchCouponException, noSuchCartException, PurchaseDuplicationException, CouponOutOfStockException, couponExpiredException {
 		Customer cust = customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);
 		Coupon c = couponRepo.findById(coupId).orElseThrow(CouponDoesnotExistException::new);
@@ -184,20 +159,10 @@ import java.util.UUID;
 		return couponRepo.findAll();
 	}
 
-	 /**
-	  * A method to be used for a customer to buy one coupon out of all existing coupons.
-	  * @param coupId - coupon id
-	  * @return - returns coupon object
-	  * @throws NoSuchCouponException- coupon not found
-	  */
+
 	public Coupon getOneCoupon(int coupId) throws NoSuchCouponException {
 		return couponRepo.findById(coupId).orElseThrow(NoSuchCouponException::new);
 	}
-
-	/**
-	 * If the customer owns a cart then the method simply returns it, otherwise a
-	*/
-
 
 	private Customer convertToEntity(CustomerDTO dt){
 		Customer customer = new Customer();

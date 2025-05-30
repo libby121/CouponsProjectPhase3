@@ -1,16 +1,29 @@
-package com.example.demo.beans;
+package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
+/**
+ *  Entity tag-Hibernate annotation. Indicates an entity to be mapped to a table in the dataBase.
+ *  Table tag-enables changing some meta-data of the created table, such as userName.
+ *  id tag-an annotation that represents a primary key by which the entity will be identified.
+ *  GeneratedValue(Identity) tag-the marked property will be automatically incremented by one in every creation
+ *  of the class object.
+ *  Column tag-java property to be mapped to a column.
+ *  OneToMany tag-In this case, each company entity 'owns' a list of coupons. The coupons property is not mapped to a
+ *  column, but it rather represents a relation.
+ *  mappedBy-marks that the property in this bean does not require a separate table since it's the opposite side of @ManyToOne
+ *  relation which already exist in another bean.
+ *  fetch-There are different strategies to get or fetch the data of related entities. "eager" means that
+ *  the fetched data includes information that might not be otherwise critical or essential to fetch.But is needed in this case.
+ *
+ */
 @Entity
-@Table(name="customers")
-public class Customer  extends User {
-
-
+ public class Customer  extends MyUser {
 
 	@Column(name="first_name")
 	private String firstName;
@@ -18,24 +31,28 @@ public class Customer  extends User {
 	private String lastName;
 	@Column(name="is_Prime")
 	private boolean isPrime;
-	
-	/**
-	 * Customer' total revenue to the companies. 
-	 */
-	 @Column(scale=2)  
+   	 @Column(scale=2)
 	private double revenue;
 	/**
 	 * Set (instead of a List) makes sure that both coupon_id and customer_id are the primary key together,
 	 * a Set in Java only accepts a unique value. 
 	 */
+
 	@ManyToMany(mappedBy="customers",fetch=FetchType.EAGER)
 	 Set<Coupon>coupons;
-
- 
-	@OneToOne(mappedBy="customer")
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "customer_role")
 	@JsonIgnore
-	private ShoppingCart cart;
+	@Enumerated(EnumType.STRING)
+	private Set<MyRole> myRoles;
+	public Collection<MyRole> getRoles() {
+		return myRoles;
+	}
+    public Customer(String username, String password, String email) {
+		super(username,password,email);
+		this.coupons =new HashSet<>();
 
+    }
 	public double getRevenue() {
 		return revenue;
 	}
@@ -91,17 +108,11 @@ public class Customer  extends User {
 	public void setPrime(boolean isPrime) {
 		this.isPrime = isPrime;
 	}
-	public ShoppingCart getCart() {
-		return cart;
-	}
-	public void setCart(ShoppingCart cart) {
-		this.cart = cart;
-	}
+
 	@Override
 	public String toString() {
-		return "Customer [id=" + id + ", firstName=" + firstName + ", coupons=" + coupons + ", cart=" + cart + "]";
+		return "Customer [id=" + id + ", firstName=" + firstName + ", coupons=" + coupons +"]";
 	}
 
 
 }
-

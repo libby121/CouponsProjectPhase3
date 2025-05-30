@@ -16,9 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CouponsProject3Application {
 
 	public static void main(String[] args) {
-//  		ConfigurableApplicationContext ctx = SpringApplication.run(CouponsProject3Application.class, args);
-//		CouponDailyJob couponThread = ctx.getBean(CouponDailyJob.class);
-//		couponThread.start();
+
 		    SpringApplication.run(CouponsProject3Application.class, args);
 
 	}
