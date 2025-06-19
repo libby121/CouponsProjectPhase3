@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    username: root
+    url: jdbc:mysql://localhost:3306/couponsDb?serverTimezone=UTC&createDatabaseIfNotExist=true
+    driver-class-userName: com.mysql.cj.jdbc.Driver
+    password: '1234'
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: 'false'
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+  jpa:
+    hibernate:
+      ddl-auto: create
+sys:
+  password: '1234'
+  username: admin
+server:
+  port: '8181'

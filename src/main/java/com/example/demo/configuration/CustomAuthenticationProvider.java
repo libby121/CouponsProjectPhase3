@@ -29,13 +29,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private final AdminDetailsService adminDetailsService;
 
     public CustomAuthenticationProvider(AdminDetailsService adminDetailsService) {
+
         this.adminDetailsService = adminDetailsService;
     }
 
     @Override
     //for login authentication
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        //authentication already exists, has to be verified
+        //authentication already exists, but has to be verified
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
@@ -52,6 +53,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         List<SimpleGrantedAuthority>authorities=List.of(
                 (new SimpleGrantedAuthority("ROLE_ADMIN")));
+        System.out.println(adminPassword);
         return new UsernamePasswordAuthenticationToken(username, password,
                 authorities);
 

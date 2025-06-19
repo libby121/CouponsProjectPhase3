@@ -13,6 +13,14 @@ public class AdminUserDetails implements UserDetails {
     private String adminUsername;
     @Value("${sys.password}")
     private String adminPassword;
+
+    public AdminUserDetails() {
+        this.adminUsername = adminUsername;
+        this.adminPassword = adminPassword;
+        this.adminUsername = "admin";
+        this.adminPassword = "1234";
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(
@@ -21,12 +29,12 @@ public class AdminUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return adminPassword;
+        return "1234";
     }
 
     @Override
     public String getUsername() {
-        return adminUsername;
+        return "admin";
     }
 
     @Override

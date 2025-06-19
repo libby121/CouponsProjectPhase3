@@ -6,6 +6,7 @@ import com.example.demo.service.CustomerDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -17,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 import java.util.List;
 
@@ -34,6 +37,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableJpaAuditing
 public class WebConfig {
     private final CompanyDetailsService companyDetailsService;
     private final CustomerDetailsService customerDetailsService;
@@ -74,14 +78,19 @@ public class WebConfig {
                                  "/login/**"
 
                          )
-                                 .permitAll()
+                                 .permitAll());
 //                        .requestMatchers("/admin/**").hasRole("admin")
 //                        .requestMatchers("/company/**").hasRole("admin")
 //                        .requestMatchers("/buy/**").hasRole("user")
-                        .anyRequest().authenticated());
+                     //   .anyRequest().authenticated());
         httpSecurity.httpBasic(Customizer.withDefaults());
         httpSecurity.authenticationManager(manager());
-
+         httpSecurity.logout(logout -> logout
+                 .logoutUrl("/logout").
+                  invalidateHttpSession(true)
+                 .clearAuthentication(true)
+                 .addLogoutHandler(new SecurityContextLogoutHandler())
+                 .deleteCookies("JSESSIONID"));
         return httpSecurity.build();
     }
 

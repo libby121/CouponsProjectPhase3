@@ -18,6 +18,11 @@ import java.util.function.Function;
 
 /**
  * token management service
+ * jwt mechanism uses a stateless approach, the server does not store the session information
+ * and there is no database persistence on each particular request.
+ * In order to "force" token expiration on logout request
+ * a refresh token mechanism can be implemented..
+ *
  */
 @Service
 public class JwtService {
@@ -49,11 +54,18 @@ public class JwtService {
 
 
     }
+
+    //invalidateToken-how to set the claims
+    //not an entity
+    public void inValidateToken(String token){
+        Jwts.builder().expiration(new Date(System.currentTimeMillis()));
+    }
     public String generateToken(String username,String userType) {
         Map<String,Object> claims = new HashMap<String,Object>();
-//        claims.put("type",userType);
+
         return Jwts.builder().claims().
                 add(claims).subject(username).add("userType",userType).
+                add("isValid",true).
                 issuedAt(new Date(System.currentTimeMillis())).
                 expiration(new Date(System.currentTimeMillis()+60*60*30*60))
                 .and()
@@ -99,6 +111,7 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
+
         return extractExpiration(token).before(new Date());
     }
 
