@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -75,7 +76,7 @@ import java.util.Map;
 
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/forgot/{to}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 
     public ResponseEntity<?>forgotPassword(@PathVariable String to){
         String subject="password renewal";
@@ -84,4 +85,12 @@ import java.util.Map;
          return ResponseEntity.ok("email sent successfully");
 
     }
+
+    @GetMapping("/debug")
+    public Map<String, Object> debug(Authentication authentication) {
+        return Map.of(
+                "authorities", authentication.getAuthorities()
+        );
+    }
+
 }
