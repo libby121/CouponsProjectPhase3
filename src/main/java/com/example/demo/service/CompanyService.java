@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CompanyService {
 
-      CompanyDTO register(CompanyDTO u);
+//      CompanyDTO register(CompanyDTO u);
       Coupon getOneCoupon(int coupId) throws CouponDoesnotExistException;
 
      List<Coupon> getCouponsByCategory(Category cat) ;

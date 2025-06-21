@@ -18,9 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 
 @RestController
-//@RequestMapping("/company")
+@RequestMapping("/company")
 @CrossOrigin(origins = { "http://localhost:4200" })
-@PreAuthorize("hasRole('MANAGER')")
 
 public class CompanyController {
 
@@ -117,7 +116,7 @@ public class CompanyController {
 
 	}
 
-	@GetMapping("")
+	@GetMapping("/")
 	public ResponseEntity<?> getCompanyDetails() {
 
 		try {

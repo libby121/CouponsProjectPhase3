@@ -4,8 +4,7 @@ import com.example.demo.entity.Company;
 import com.example.demo.entity.Coupon;
 import com.example.demo.entity.Customer;
 import com.example.demo.exceptions.*;
-import com.example.demo.jwt.JwtService;
-import com.example.demo.repository.CompanyRepository;
+ import com.example.demo.repository.CompanyRepository;
 import com.example.demo.repository.CouponRepository;
 import com.example.demo.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,143 +34,137 @@ import java.util.UUID;
 @Scope(value = "prototype")
 public class AdminServiceImpl  implements AdminService {
 
-	private final CompanyRepository companyRepo;
-	private final CouponRepository couponRepo;
-	private final CustomerRepository customerRepo;
+    private final CompanyRepository companyRepo;
+    private final CouponRepository couponRepo;
+    private final CustomerRepository customerRepo;
 
-	@Autowired
-	AuthenticationManager authManager;
-
-	@Autowired
-	JwtService jwtService;
-
-	public AdminServiceImpl(CompanyRepository companyRepository, CouponRepository couponRepository, CustomerRepository customerRepository) {
-		this.companyRepo = companyRepository;
-		this.couponRepo = couponRepository;
-		this.customerRepo = customerRepository;
-	}
+    public AdminServiceImpl(CompanyRepository companyRepository, CouponRepository couponRepository, CustomerRepository customerRepository) {
+        this.companyRepo = companyRepository;
+        this.couponRepo = couponRepository;
+        this.customerRepo = customerRepository;
+    }
 
 
-	public void addCompany(Company comp) throws companyExistsException {
+    public void addCompany(Company comp) throws companyExistsException {
 
-		for (Company c : companyRepo.findAll()) {
-			if (c.getEmail().equals(comp.getEmail()) || c.getUserName().equals(comp.getUserName()))
-				throw new companyExistsException();
-		}
-		companyRepo.save(comp);
+        for (Company c : companyRepo.findAll()) {
+            if (c.getEmail().equals(comp.getEmail()) || c.getUserName().equals(comp.getUserName()))
+                throw new companyExistsException();
+        }
+        companyRepo.save(comp);
 
-	}
+    }
 
-	public void updateCompany(Company comp) throws CompanyDoesNotExistException, unmodifiedCompanyNameException {
+    public void updateCompany(Company comp) throws CompanyDoesNotExistException, unmodifiedCompanyNameException {
 
-		Company compa = getCompanyByID(comp.getId());
-		if (!compa.getUserName().equals(comp.getUserName()))
-			throw new unmodifiedCompanyNameException();
+        Company compa = getCompanyByID(comp.getId());
+        if (!compa.getUserName().equals(comp.getUserName()))
+            throw new unmodifiedCompanyNameException();
 
-		else
-			companyRepo.updateCompany(comp);
+        else
+            companyRepo.updateCompany(comp);
 
-	}
+    }
 
-	/**
-	 * Deletion of a company requires first the deletion of the company coupons
-	 * purchases(represented in the many-to-many table of customers_vs_coupons),
-	 * the deletion of the company coupons from customers carts, 
-	 * and the deletion of company coupons from
-	 * the coupons table. 
-	 * 
-	 * @param id- company id
-	 */
-	public void deleteCompany(UUID id) {
+    /**
+     * Deletion of a company requires first the deletion of the company coupons
+     * purchases(represented in the many-to-many table of customers_vs_coupons),
+     * the deletion of the company coupons from customers carts,
+     * and the deletion of company coupons from
+     * the coupons table.
+     *
+     * @param id- company id
+     */
+    public void deleteCompany(UUID id) {
 
-		for (Coupon c : couponRepo.findByCompanyId(id)) {
+        for (Coupon c : couponRepo.findByCompanyId(id)) {
 
-			 
- 			if (c.getCustomers() != null) {
-				for (Customer cu : c.getCustomers()) {
+
+            if (c.getCustomers() != null) {
+                for (Customer cu : c.getCustomers()) {
 
 
 
-					couponRepo.deleteCouponPurchase(cu.getId(), c.getId());
-				}
-			}
+                    couponRepo.deleteCouponPurchase(cu.getId(), c.getId());
+                }
+            }
 
-			couponRepo.deleteById(c.getId());
+            couponRepo.deleteById(c.getId());
 
-		}
+        }
 
-		companyRepo.deleteById(id);
-	}
+        companyRepo.deleteById(id);
+    }
 
-	public List<Company> getAllCompanies() {
-		return companyRepo.findAll();
-	}
+    public List<Company> getAllCompanies() {
+        return companyRepo.findAll();
+    }
 
-	public Company getCompanyByID(UUID id) {
-		return companyRepo.findById(id).orElse(null);
-	}
+    public Company getCompanyByID(UUID id) {
+        return companyRepo.findById(id).orElse(null);
+    }
 
-	public void addCustomer(Customer customer) throws CustomerExistsException {
-		for (Customer c : customerRepo.findAll()) {
-			if (c.getEmail().equals(customer.getEmail()))
-				throw new CustomerExistsException();
-		}
-		customer.setRevenue(0);
-		customer.setPrime(false);
-		customerRepo.save(customer);
-	}
+    public void addCustomer(Customer customer) throws CustomerExistsException {
+        for (Customer c : customerRepo.findAll()) {
+            if (c.getEmail().equals(customer.getEmail()))
+                throw new CustomerExistsException();
+        }
+        customer.setRevenue(0);
+        customer.setPrime(false);
+        customerRepo.save(customer);
+    }
 
-	public void updateCustomer(Customer customer) throws CustomerDoesnotExistException {
-		if (customerRepo.existsById(customer.getId()))
+    public void updateCustomer(Customer customer) throws CustomerDoesnotExistException {
+        if (customerRepo.existsById(customer.getId()))
 
-			customerRepo.save(customer);
-		else
-			throw new CustomerDoesnotExistException();
+            customerRepo.save(customer);
+        else
+            throw new CustomerDoesnotExistException();
 
-	}
+    }
 
-	/**
-	 * A deletion of a customer requires the preceding deletion of the customer's
-	 * purchases and cart.
-	 * 
-	 * @param id- customer id
-	 */
-	public void deleteCustomer(UUID id) throws CustomerDoesnotExistException {
-		Customer c = customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);
-		if (c.getCoupons() != null) {
-			for (Coupon coup : c.getCoupons()) {
-				couponRepo.deleteCouponPurchase(c.getId(), coup.getId());
-			}
-		}
+    /**
+     * A deletion of a customer requires the preceding deletion of the customer's
+     * purchases and cart.
+     *
+     * @param id- customer id
+     */
+    public void deleteCustomer(UUID id) throws CustomerDoesnotExistException {
+        Customer c = customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);
+        if (c.getCoupons() != null) {
+            for (Coupon coup : c.getCoupons()) {
+                couponRepo.deleteCouponPurchase(c.getId(), coup.getId());
+            }
+        }
 
-		customerRepo.deleteById(id);
+        customerRepo.deleteById(id);
 
-	}
+    }
 
-	public List<Customer> getAllCustomers() {
-		return customerRepo.findAll();
-	}
+    public List<Customer> getAllCustomers() {
+        return customerRepo.findAll();
+    }
 
-	public Customer getOneCustomer(UUID id) throws CustomerDoesnotExistException {
-		return customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);
-	}
+    public Customer getOneCustomer(UUID id) throws CustomerDoesnotExistException {
+        return customerRepo.findById(id).orElseThrow(CustomerDoesnotExistException::new);
+    }
 
-	public List<Coupon> getAllCoupons() {
-  		return couponRepo.findAll();
- 	}
+    public List<Coupon> getAllCoupons() {
+        return couponRepo.findAll();
+    }
 
-	public Coupon getOneCoupon(int coupId) throws CouponDoesnotExistException {
-		return couponRepo.findById(coupId).orElseThrow(CouponDoesnotExistException::new);
-	}
+    public Coupon getOneCoupon(int coupId) throws CouponDoesnotExistException {
+        return couponRepo.findById(coupId).orElseThrow(CouponDoesnotExistException::new);
+    }
 
-	@Override
-	public Company getOneCompany(String token, UUID companyId) {
-		return null;
-	}
+    @Override
+    public Company getOneCompany(String token, UUID companyId) {
+        return null;
+    }
 
-	@Override
-	public void addCustomer(String token, Customer customer) {
+    @Override
+    public void addCustomer(String token, Customer customer) {
 
-	}
+    }
 
 }

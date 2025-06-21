@@ -50,18 +50,6 @@ public class AdminController {
         this.companyService = companyService;
     }
 
-	@PostMapping("/addCompany")
-	public ResponseEntity<?> register(@RequestBody CompanyDTO company
-	){
-		try{
-			return ResponseEntity.ok(
-					companyService.register(company));
-
-		}catch(Exception e){
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("registration failed");
-		}
-	}
-
 
 	@PutMapping("/updateCompany")
 	public ResponseEntity<?> updateCompany(@RequestBody Company company)

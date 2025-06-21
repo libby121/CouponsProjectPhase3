@@ -9,10 +9,6 @@ import java.util.List;
 public interface CustomerService {
 
 
-      String verify(String username, String password);
-
-      CustomerDTO register(String username,
-                                String password, String email);
       Coupon purchaseCoupon(int coupId) throws
             CustomerDoesnotExistException, CouponOutOfStockException,
             PurchaseDuplicationException, couponExpiredException,

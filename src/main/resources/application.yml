@@ -14,8 +14,26 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  security:
+    oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: http://localhost:8180/realms/spring_coupons
+          client:
+            registration:
+              keycloak:
+                client-id: spring-app
+                client-secret: wZ5twjGGzcn7DuBYWO8FdFoBn1o2T00B
+                scope: openid, profile, email
+                authorization-grant-type: authorization_code
+                redirect-uri: "http://localhost:8080/login/oauth2/code/keycloak"
+            provider:
+              keycloak:
+                issuer-uri: http://localhost:8180/realms/spring_coupons
+
 sys:
   password: '1234'
   username: admin
+
 server:
-  port: '8181'
+  port: 8080

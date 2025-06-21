@@ -1,18 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Category;
-import com.example.demo.entity.Coupon;
 import com.example.demo.exceptions.*;
-import com.example.demo.service.CustomerServiceImpl;
-import org.springframework.http.HttpHeaders;
+import com.example.demo.service.CustomerService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 
 @RestController
 @RequestMapping("/customer")
@@ -20,32 +13,15 @@ import java.io.RandomAccessFile;
 public class CustomerController {
 
 
-	private CustomerServiceImpl customerService;
+	private CustomerService customerService;
 
-	public CustomerController(CustomerServiceImpl customerService) {
+	public CustomerController(CustomerService customerService) {
 		this.customerService = customerService;
 	}
 
 
-	@PostMapping ("/login/{username}/{password}")
-	public ResponseEntity<?>login
-			(@PathVariable("username") String username, @PathVariable String password){
-		return ResponseEntity.ok(
-				customerService.verify(username, password));
-	}
 
-	@PostMapping("/register/{username}/{password}/{email}")
-	public ResponseEntity<?> register(@PathVariable String username,
-									  @PathVariable String password,
-									  @PathVariable String email
-	){
-		try{
-			return ResponseEntity.ok(customerService.register(username,password,email));
 
-		}catch(Exception e){
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("registration failed");
-		}
-	}
 
 	@PostMapping("/purchase/{coupId}")
 	public ResponseEntity<?> purchase(@PathVariable int coupId)

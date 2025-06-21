@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.demo.entity.*;
-import com.example.demo.jwt.JwtService;
-import com.example.demo.model.CompanyDTO;
+ import com.example.demo.model.CompanyDTO;
 import com.example.demo.model.CouponDTO;
 import com.example.demo.repository.CompanyRepository;
 import com.example.demo.repository.CouponRepository;
@@ -34,32 +33,26 @@ public class CompanyServiceImpl implements CompanyService {
 	private final CompanyRepository companyRepo;
 	private final CouponRepository couponRepo;
 	private final CustomerRepository customerRepo;
-	private final AuthenticationManager authManager;
-	private final JwtService jwtService;
-	private final PasswordEncoder passwordEncoder;
+
 	private UUID companyId;
 
 
-	public CompanyServiceImpl(JwtService jwtService,
-							  PasswordEncoder passwordEncoder, AuthenticationManager authManager, CustomerRepository customerRepo, CouponRepository couponRepo, CompanyRepository companyRepo) {
-		this.jwtService = jwtService;
-		this.passwordEncoder = passwordEncoder;
+	public CompanyServiceImpl( CustomerRepository customerRepo, CouponRepository couponRepo, CompanyRepository companyRepo) {
 
-		this.authManager = authManager;
-		this.customerRepo = customerRepo;
+ 		this.customerRepo = customerRepo;
 		this.couponRepo = couponRepo;
 		this.companyRepo = companyRepo;
 	}
 
-	public CompanyDTO register(CompanyDTO u){
-		Company uu = convertToEntity(u);
-		uu.setPassword(passwordEncoder.encode(uu.getPassword()));
-        //decode password?
-		CompanyDTO uuu=convertToDTO(uu);
-		companyRepo.save(uu);
-		return uuu;
-
-	}
+//	public CompanyDTO register(CompanyDTO u){
+//		Company uu = convertToEntity(u);
+//		uu.setPassword(passwordEncoder.encode(uu.getPassword()));
+//        //decode password?
+//		CompanyDTO uuu=convertToDTO(uu);
+//		companyRepo.save(uu);
+//		return uuu;
+//
+//	}
 
 	public Coupon getOneCoupon(int coupId) throws CouponDoesnotExistException {
 		Coupon c = couponRepo.findById(coupId).orElse(null);
