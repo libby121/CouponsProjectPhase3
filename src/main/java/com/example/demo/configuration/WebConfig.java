@@ -35,6 +35,9 @@ public class WebConfig {
                         .requestMatchers("/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/keycloak") // <== this forces redirect
+                )
                 .formLogin(form -> form.disable())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
@@ -53,6 +56,13 @@ public class WebConfig {
         return http.build();
     }
 
+    /**
+     * Tells Spring how to extract roles from the token
+     * Looks for the custom_roles claim in the JWT
+     * This is crucial for @PreAuthorize("hasRole('ADMIN')")
+     * or hasAuthority(...) to work.
+     * @return JwtAuthenticationConverter
+     */
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {

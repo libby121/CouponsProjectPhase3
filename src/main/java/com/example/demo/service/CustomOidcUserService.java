@@ -12,6 +12,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.*;
 
+/**
+ * the class allows me to customize how the user is loaded
+ * after logging in with OpenID Connect (OIDC)
+ * The default OidcUserService doesn't
+ * automatically map that claim to GrantedAuthoritys-
+ * so I override the default behaviour
+ */
+
 @Service
 public class CustomOidcUserService extends OidcUserService {
 

@@ -1,39 +1,65 @@
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: springboot-ssl
+
 spring:
   datasource:
     username: root
-    url: jdbc:mysql://localhost:3306/couponsDb?serverTimezone=UTC&createDatabaseIfNotExist=true
-    driver-class-userName: com.mysql.cj.jdbc.Driver
     password: '1234'
+    url: jdbc:mysql://localhost:3306/couponsDb?serverTimezone=UTC&createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    #port: 465
+#    username: libbyl6564@gmail.com
+#    #password: ${spring.mail.password}  # This must be set as a system/environment variable!
+#    password:
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+
   jackson:
     serialization:
-      FAIL_ON_EMPTY_BEANS: 'false'
+      FAIL_ON_EMPTY_BEANS: false
+
   servlet:
     multipart:
       max-request-size: 100MB
       max-file-size: 100MB
+
   jpa:
     hibernate:
       ddl-auto: create
+
   security:
     oauth2:
-          resourceserver:
-            jwt:
-              issuer-uri: http://localhost:8180/realms/spring_coupons
-          client:
-            registration:
-              keycloak:
-                client-id: spring-app
-                client-secret: wZ5twjGGzcn7DuBYWO8FdFoBn1o2T00B
-                scope: openid, profile, email
-                authorization-grant-type: authorization_code
-                redirect-uri: "http://localhost:8080/login/oauth2/code/keycloak"
-            provider:
-              keycloak:
-                issuer-uri: http://localhost:8180/realms/spring_coupons
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/spring_coupons
+      client:
+        registration:
+          keycloak:
+            client-id: spring-app
+            client-secret: wZ5twjGGzcn7DuBYWO8FdFoBn1o2T00B
+            scope: openid, profile, email
+            authorization-grant-type: authorization_code
+            redirect-uri: "https://localhost:8443/login/oauth2/code/keycloak"
+            #redirect-uri: "http://localhost:8080/login/oauth2/code/keycloak"
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8180/realms/spring_coupons
 
 sys:
-  password: '1234'
   username: admin
-
-server:
-  port: 8080
+  password: '1234'
